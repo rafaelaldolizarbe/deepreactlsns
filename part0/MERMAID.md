@@ -1,33 +1,80 @@
-When you're ready, delete this note and make the vault your own.
+## Part0 exercises
+
+The exercises 0.1 to 0.3 is about reading, showing everithing about the importance of the complement parts of a vanilla development. Now ahead you will see the exercise 0.4 that is divided in two parts.
+
+### 0.5 SPA Diagram
+Below you will see a sequence diagram showing the http request context of a simple application in which notes are saved in a JSON file on the Helsinki Open University server.
+
+
 
 ````mermaid
 
 sequenceDiagram
-    participant browser
-    participant server
+title Diagram of sequence representing a rendering site
 
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
-    activate server
-    server-->>browser: HTML document
-    deactivate server
+    participant clientside
+    participant webserver
 
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
-    activate server
-    server-->>browser: the css file
-    deactivate server
+    clientside->>webserver: GET https://studies.cs.helsinki.fi/exampleapp/notes
+    activate webserver
+    webserver-->>clientside: STATUS 304 Not Modified <br/> notes.html document 
+    deactivate webserver
 
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.js
-    activate server
-    server-->>browser: the JavaScript file
-    deactivate server
+    clientside->>webserver: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+    activate webserver
+    webserver-->>clientside: STATUS 304 Not Modified <br/> main.css file 
+    deactivate webserver
 
-    Note right of browser: Execução do código JavaScript que busca o JSON do servidor
+    clientside->>webserver: GET https://studies.cs.helsinki.fi/exampleapp/main.js
+    activate webserver
+    webserver-->>clientside:  STATUS 304 Not Modified <br/> main.js file
+    deactivate webserver
 
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
-    activate server
-    server-->>browser: [{ "content": "HTML é fácil", "date": "2023-1-1" }, ... ]
-    deactivate server
+    Note right of clientside: Executing JavaScript code on the client side that fetches JSON from the server
 
-    Note right of browser: Execução da função callback (função de retorno de chamada) que renderiza as notas
+    clientside->>webserver: GET https://mydomain.exmpl.com/homepage/data.json
+    activate webserver
+    webserver-->>clientside: STATUS 200 OK <br/> JSON list:[{ "content": "HTML is very easy", "date": "2023-1-1" }, ... ]
+    deactivate webserver
+
+    Note right of clientside: Execution of the callback function that renders the notes
     
 `````
+### 0.6 New Note SPA Diagram
+Below you will see a sequence diagram illustrating the POST method of an http request showing what happens when a new note is registered on the site
+
+````mermaid
+sequenceDiagram
+    participant clientside
+    participant webserver
+
+    clientside ->> webserver: POST https://studies.cs.helsinki.fi/exampleapp/new_note
+    activate webserver
+    webserver -->> clientside: STATUS 302 Found <br/>event-loop.js file
+    deactivate webserver
+    Note right of clientside: Execution of the event loop function that renders the pages again, <br/>now with the new line.
+
+    clientside->>webserver: GET https://studies.cs.helsinki.fi/exampleapp/notes
+    activate webserver
+    webserver-->>clientside: STATUS 304 Not Modified <br/> notes.html document 
+    deactivate webserver
+
+    clientside->>webserver: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+    activate webserver
+    webserver-->>clientside: STATUS 304 Not Modified <br/> main.css file 
+    deactivate webserver
+
+    clientside->>webserver: GET https://studies.cs.helsinki.fi/exampleapp/main.js
+    activate webserver
+    webserver-->>clientside:  STATUS 304 Not Modified <br/> main.js file
+    deactivate webserver
+
+    Note right of clientside: Executing JavaScript code on the client side that fetches JSON from the server
+    clientside->>webserver: GET https://mydomain.exmpl.com/homepage/data.json
+    activate webserver
+    webserver-->>clientside: STATUS 200 OK <br/> JSON list:[{ "content": "HTML is very easy", "date": "2023-1-1" }, ... ]
+    deactivate webserver
+
+    Note right of clientside: Execution of the callback function that renders the notes, <br/>including the new one!
+
+````
